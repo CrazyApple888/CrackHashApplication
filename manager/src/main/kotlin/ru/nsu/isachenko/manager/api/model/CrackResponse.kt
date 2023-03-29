@@ -1,4 +1,4 @@
-package ru.nsu.isachenko.crackhash.service.model
+package ru.nsu.isachenko.manager.api.model
 
 class CrackResponse(
     val id: String,

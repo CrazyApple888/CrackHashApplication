@@ -1,27 +1,27 @@
-package ru.nsu.isachenko.crackhash.service.controller
+package ru.nsu.isachenko.manager.api.controller
 
 import org.springframework.web.bind.annotation.*
-import ru.nsu.isachenko.crackhash.service.model.CrackRequest
-import ru.nsu.isachenko.crackhash.service.model.CrackResponse
-import ru.nsu.isachenko.crackhash.service.model.Status
-import ru.nsu.isachenko.crackhash.service.model.StatusResponse
+import ru.nsu.isachenko.manager.api.model.CrackRequest
+import ru.nsu.isachenko.manager.api.model.CrackResponse
+import ru.nsu.isachenko.manager.api.model.StatusResponse
+import ru.nsu.isachenko.manager.api.service.WorkerService
 
 
 @RestController
 @RequestMapping("/api/hash")
-class CrackController {
+class CrackController(
+    private val workerService: WorkerService
+) {
 
     @PostMapping("/crack")
     fun crackHash(@RequestBody body: CrackRequest): CrackResponse {
         return CrackResponse(
-            id = "${body.hash} ${body.maxLength}"
+            id = workerService.postTasks(body)
         )
     }
 
     @GetMapping("/status")
     fun status(@RequestParam("requestId") requestId: String): StatusResponse {
-        return StatusResponse(
-            status = Status.IN_PROGRESS
-        )
+        return workerService.getStatus(requestId)
     }
 }

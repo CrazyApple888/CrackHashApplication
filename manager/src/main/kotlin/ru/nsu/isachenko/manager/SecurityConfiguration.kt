@@ -1,4 +1,4 @@
-package ru.nsu.isachenko.crackhash
+package ru.nsu.isachenko.manager
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
