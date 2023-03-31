@@ -1,5 +1,6 @@
 package ru.nsu.isachenko.manager.api.storage
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
 import ru.nsu.isachenko.CrackHashWorkerResponse
@@ -18,7 +19,7 @@ class TasksStorage {
         val id = UUID.randomUUID().toString()
         cache[id] = CrackHashJob(
             data = data,
-            tasks = (0..tasksCount).associateWith { CrackHashJob.CrackHashTask() }.toMutableMap()
+            tasks = (0 until tasksCount).associateWith { CrackHashJob.CrackHashTask() }.toMutableMap()
         )
 
         return id

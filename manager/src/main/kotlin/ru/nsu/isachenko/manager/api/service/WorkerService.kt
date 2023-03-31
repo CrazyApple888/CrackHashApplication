@@ -10,11 +10,18 @@ import ru.nsu.isachenko.manager.api.storage.TasksStorage
 class WorkerService(
     @Autowired
     private val tasksStorage: TasksStorage,
+    @Autowired
+    private val workerRestTemplateService: WorkerRestTemplateService,
 ) {
 
     fun postTasks(request: CrackRequest): String {
-        //todo post tasks to worker
-        return tasksStorage.saveTask(request, 1)
+        val id = tasksStorage.saveTask(request, 1)
+        workerRestTemplateService.postTask(
+            hash = request.hash,
+            maxLength = request.maxLength,
+            requestId = id,
+        )
+        return id
     }
 
     fun getStatus(id: String): StatusResponse {

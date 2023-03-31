@@ -28,6 +28,8 @@ dependencies {
 	implementation("org.springframework.security:spring-security-web")
 	implementation("org.springframework.security:spring-security-core")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("io.reactivex.rxjava3:rxjava:3.1.6")
+	implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	implementation("javax.xml.bind:jaxb-api:2.3.1")
