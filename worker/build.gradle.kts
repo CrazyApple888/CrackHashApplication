@@ -78,6 +78,12 @@ tasks.withType<JavaCompile>().configureEach {
     dependsOn(xjc)
 }
 
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "ru.nsu.isachenko.worker.WorkerApplication"
+    }
+}
+
 sourceSets {
     main {
         java {

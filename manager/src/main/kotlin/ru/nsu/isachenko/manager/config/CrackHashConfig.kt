@@ -7,7 +7,4 @@ object CrackHashConfig {
 
     val workersCount: Int
         get() = 1
-
-    val baseWorkerPort: String
-        get() = "8080"
 }

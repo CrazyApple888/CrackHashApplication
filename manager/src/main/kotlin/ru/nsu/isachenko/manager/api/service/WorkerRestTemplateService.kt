@@ -31,7 +31,7 @@ class WorkerRestTemplateService {
         }.convertToHttp()
 
         restTemplate.postForEntity(
-            "http://localhost:8081/internal/api/worker/hash/crack/task",
+            "http://10.6.0.3:8081/internal/api/worker/hash/crack/task",
             request,
             String::class.java
         )

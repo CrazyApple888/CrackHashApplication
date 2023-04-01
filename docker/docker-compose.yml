@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  manager:
+    image: nsu/crackhashmanager:latest
+    container_name: manager
+    domainname: manager
+    hostname: manager
+    ports:
+      - "8080:8080"
+    networks:
+      docker-inner-network:
+        ipv4_address: 10.6.0.2
+
+  worker:
+    image: nsu/crackhashworker:latest
+    container_name: worker
+    domainname: worker
+    hostname: worker
+    ports:
+      - "8081:8081"
+    networks:
+      docker-inner-network:
+        ipv4_address: 10.6.0.3
+
+networks:
+  docker-inner-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.6.0.0/24
+          gateway: 10.6.0.1
