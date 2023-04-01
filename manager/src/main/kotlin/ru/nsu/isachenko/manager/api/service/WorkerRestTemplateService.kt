@@ -30,7 +30,7 @@ class WorkerRestTemplateService {
             }.convertToHttp()
 
             //todo
-            //restTemplate.postForEntity("todo", request, Any::class.java)
+            restTemplate.postForEntity("http://localhost:8081/internal/api/worker/hash/crack/task", request, Any::class.java)
         }
     }
 

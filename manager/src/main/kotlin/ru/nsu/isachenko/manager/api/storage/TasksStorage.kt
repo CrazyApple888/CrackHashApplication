@@ -1,8 +1,6 @@
 package ru.nsu.isachenko.manager.api.storage
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Repository
 import ru.nsu.isachenko.CrackHashWorkerResponse
 import ru.nsu.isachenko.manager.api.model.CrackRequest
 import ru.nsu.isachenko.manager.api.model.Status
@@ -25,8 +23,8 @@ class TasksStorage {
         return id
     }
 
-    fun updateTask(id: String, response: CrackHashWorkerResponse?, taskId: Int) {
-        val job = cache[id] ?: return
+    fun updateTask(response: CrackHashWorkerResponse?, taskId: Int) {
+        val job = cache[response?.requestId] ?: return
         job.tasks.computeIfPresent(taskId) { _, _ ->
             CrackHashJob.CrackHashTask(
                 status = if (response == null) Status.ERROR else Status.READY,
