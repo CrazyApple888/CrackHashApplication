@@ -14,6 +14,7 @@ import ru.nsu.isachenko.CrackHashManagerRequest
 import ru.nsu.isachenko.CrackHashWorkerResponse
 import java.io.StringReader
 import java.io.StringWriter
+import javax.xml.bind.DatatypeConverter
 
 
 @Service
@@ -56,7 +57,7 @@ class WorkerService {
     }
 
     private fun String.md5(): String {
-        return Base64.encodeBase64String(DigestUtils.md5Digest(toByteArray()))
+        return DatatypeConverter.printHexBinary(DigestUtils.md5Digest(toByteArray()))
     }
 
     private fun CrackHashWorkerResponse.convertToString(): String {

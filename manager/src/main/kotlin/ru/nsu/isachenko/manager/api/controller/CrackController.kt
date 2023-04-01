@@ -8,6 +8,7 @@ import ru.nsu.isachenko.manager.api.model.CrackResponse
 import ru.nsu.isachenko.manager.api.model.StatusResponse
 import ru.nsu.isachenko.manager.api.service.WorkerService
 import java.security.MessageDigest
+import javax.xml.bind.DatatypeConverter
 
 
 @RestController
@@ -30,6 +31,6 @@ class CrackController(
 
     @GetMapping("/generate")
     fun generateHash(@RequestParam("word") word: String): String {
-        return Base64.encodeBase64String(DigestUtils.md5Digest(word.toByteArray()))
+        return DatatypeConverter.printHexBinary(DigestUtils.md5Digest(word.toByteArray()))
     }
 }
