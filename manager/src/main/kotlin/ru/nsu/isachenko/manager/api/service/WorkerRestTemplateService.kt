@@ -2,36 +2,44 @@ package ru.nsu.isachenko.manager.api.service
 
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import ru.nsu.isachenko.CrackHashManagerRequest
+import ru.nsu.isachenko.manager.api.storage.TasksStorage
 import ru.nsu.isachenko.manager.config.CrackHashConfig
 import java.io.StringWriter
 
 
 @Service
-class WorkerRestTemplateService {
+class WorkerRestTemplateService(
+    @Autowired
+    private val storage: TasksStorage
+) {
 
-    fun postTask(hash: String, maxLength: Int, requestId: String) {
+    suspend fun postTask(hash: String, maxLength: Int, requestId: String, taskId: Int) = withContext(Dispatchers.IO) {
         val restTemplate = RestTemplate()
-        for (i in 0 until CrackHashConfig.workersCount) {
-            val request = CrackHashManagerRequest().apply {
-                setRequestId(requestId)
-                setHash(hash)
-                setMaxLength(maxLength)
-                alphabet = CrackHashManagerRequest.Alphabet().apply {
-                    symbols.addAll(CrackHashConfig.alphabet)
-                }
-                partCount = CrackHashConfig.workersCount
-                partNumber = i
-            }.convertToHttp()
+        val request = CrackHashManagerRequest().apply {
+            setRequestId(requestId)
+            setHash(hash)
+            setMaxLength(maxLength)
+            alphabet = CrackHashManagerRequest.Alphabet().apply {
+                symbols.addAll(CrackHashConfig.alphabet)
+            }
+            partCount = CrackHashConfig.workersCount
+            partNumber = taskId
+        }.convertToHttp()
 
-            //todo
-            restTemplate.postForEntity("http://localhost:8081/internal/api/worker/hash/crack/task", request, Any::class.java)
-        }
+        restTemplate.postForEntity(
+            "http://localhost:8081/internal/api/worker/hash/crack/task",
+            request,
+            String::class.java
+        )
     }
 
     private fun CrackHashManagerRequest.convertToHttp(): HttpEntity<String> {

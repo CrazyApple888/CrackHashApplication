@@ -16,8 +16,8 @@ class WorkerController(
 ) {
 
     @PostMapping("/task")
-    fun postTask(@RequestBody body: String) {
-        workerService.compute(
+    fun postTask(@RequestBody body: String): String {
+        return workerService.compute(
             workerService.readXml(body)
         )
     }

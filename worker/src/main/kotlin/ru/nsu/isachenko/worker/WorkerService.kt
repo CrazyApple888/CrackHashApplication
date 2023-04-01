@@ -28,18 +28,28 @@ import java.io.StringWriter
 @Service
 class WorkerService {
 
-    @Async
-    fun compute(request: CrackHashManagerRequest) {
-        Single.just(request)
-            .map {
-                val answers = findWord(request)
-                it to answers
-            }
-            .observeOn(Schedulers.computation())
-            .subscribeOn(Schedulers.io())
-            .subscribeBy { (request, answers) ->
-                sendWords(request, answers)
-            }
+    fun compute(request: CrackHashManagerRequest): String {
+        val answers = findWord(request)
+        return CrackHashWorkerResponse().apply {
+            setAnswers(
+                CrackHashWorkerResponse.Answers().apply {
+                    words.addAll(answers)
+                }
+            )
+            partNumber = request.partNumber
+            requestId = request.requestId
+        }.convertToString()
+
+//        Single.just(request)
+//            .map {
+//                val answers = findWord(request)
+//                it to answers
+//            }
+//            .observeOn(Schedulers.computation())
+//            .subscribeOn(Schedulers.io())
+//            .subscribeBy { (request, answers) ->
+//                sendWords(request, answers)
+//            }
     }
 
     fun readXml(xml: String?): CrackHashManagerRequest {
@@ -65,36 +75,45 @@ class WorkerService {
         return answers
     }
 
-    private fun sendWords(request: CrackHashManagerRequest, answers: List<String>) {
-        val rest = RestTemplate()
-        val response = CrackHashWorkerResponse().apply {
-            setAnswers(
-                CrackHashWorkerResponse.Answers().apply {
-                    words.addAll(answers)
-                }
-            )
-            partNumber = request.partNumber
-            requestId = request.requestId
-        }.convertToHttp()
-
-        val requestFactory = HttpComponentsClientHttpRequestFactory()
-        rest.requestFactory = requestFactory
-        rest.patchForObject("http://localhost:8080/internal/api/manager/hash/crack/request", response, Any::class.java)
-    }
+//    private fun sendWords(request: CrackHashManagerRequest, answers: List<String>) {
+//        val rest = RestTemplate()
+//        val response = CrackHashWorkerResponse().apply {
+//            setAnswers(
+//                CrackHashWorkerResponse.Answers().apply {
+//                    words.addAll(answers)
+//                }
+//            )
+//            partNumber = request.partNumber
+//            requestId = request.requestId
+//        }.convertToHttp()
+//
+//        val requestFactory = HttpComponentsClientHttpRequestFactory()
+//        rest.requestFactory = requestFactory
+//        rest.patchForObject("http://localhost:8080/internal/api/manager/hash/crack/request", response, Any::class.java)
+//    }
 
     private fun String.md5(): String {
         return Base64.encodeBase64String(DigestUtils.md5Digest(toByteArray()))
     }
 
-    private fun CrackHashWorkerResponse.convertToHttp(): HttpEntity<String> {
+    private fun CrackHashWorkerResponse.convertToString(): String {
         val jaxbContext: JAXBContext = JAXBContext.newInstance(CrackHashWorkerResponse::class.java)
         val marshaller: Marshaller = jaxbContext.createMarshaller()
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
         val sw = StringWriter()
         marshaller.marshal(this, sw)
-        val xmlString: String = sw.toString()
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_XML
-        return HttpEntity(xmlString, headers)
+        return sw.toString()
     }
+
+//    private fun CrackHashWorkerResponse.convertToHttp(): HttpEntity<String> {
+//        val jaxbContext: JAXBContext = JAXBContext.newInstance(CrackHashWorkerResponse::class.java)
+//        val marshaller: Marshaller = jaxbContext.createMarshaller()
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+//        val sw = StringWriter()
+//        marshaller.marshal(this, sw)
+//        val xmlString: String = sw.toString()
+//        val headers = HttpHeaders()
+//        headers.contentType = MediaType.APPLICATION_XML
+//        return HttpEntity(xmlString, headers)
+//    }
 }
