@@ -4,23 +4,18 @@ import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import ru.nsu.isachenko.CrackHashManagerRequest
-import ru.nsu.isachenko.manager.api.storage.TasksStorage
 import ru.nsu.isachenko.manager.config.CrackHashConfig
 import java.io.StringWriter
 
 
 @Service
-class WorkerRestTemplateService(
-    @Autowired
-    private val storage: TasksStorage
-) {
+class WorkerRestTemplateService {
 
     suspend fun postTask(hash: String, maxLength: Int, requestId: String, taskId: Int) = withContext(Dispatchers.IO) {
         val restTemplate = RestTemplate()
