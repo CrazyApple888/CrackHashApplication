@@ -1,11 +1,8 @@
-version: '3'
-
+name: crackhash
 services:
   manager:
-    image: nsu/crackhashmanager:latest
+    image: crackhash/manager:latest
     container_name: manager
-    domainname: manager
-    hostname: manager
     ports:
       - "8080:8080"
     networks:
@@ -15,8 +12,6 @@ services:
   worker:
     image: nsu/crackhashworker:latest
     container_name: worker
-    domainname: worker
-    hostname: worker
     ports:
       - "8081:8081"
     networks:
