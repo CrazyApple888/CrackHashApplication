@@ -2,11 +2,7 @@ package ru.nsu.isachenko.manager.api.service
 
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Unmarshaller
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import ru.nsu.isachenko.CrackHashWorkerResponse
 import ru.nsu.isachenko.manager.api.model.CrackRequest
@@ -36,32 +32,21 @@ class WorkerService(
     }
 
     private fun performTaskOnWorker(request: CrackRequest, requestId: String, taskId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = workerRestTemplateService.postTask(
-                hash = request.hash,
-                maxLength = request.maxLength,
-                requestId = requestId,
-                taskId = taskId
-            )
-
-            updateTask(
-                taskId = taskId,
-                response = response
-            )
-        }
+        workerRestTemplateService.postTask(
+            hash = request.hash,
+            maxLength = request.maxLength,
+            requestId = requestId,
+            taskId = taskId
+        )
     }
 
-    private fun updateTask(taskId: Int, response: ResponseEntity<String?>) {
-        val responseXml: CrackHashWorkerResponse? = if (response.statusCode.isError) {
-            null
-        } else {
-            runCatching {
-                readXml(response.body!!)
-            }.getOrNull()
-        }
+    fun updateTask(response: String) {
+        val responseXml = runCatching {
+            readXml(response!!)
+        }.getOrNull()
         tasksStorage.updateTask(
             response = responseXml,
-            taskId = taskId
+            taskId = responseXml?.partNumber ?: 0
         )
     }
 

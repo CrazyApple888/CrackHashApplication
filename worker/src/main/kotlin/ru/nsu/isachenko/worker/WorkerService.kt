@@ -3,13 +3,17 @@ package ru.nsu.isachenko.worker
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
 import jakarta.xml.bind.Unmarshaller
-import org.apache.tomcat.util.codec.binary.Base64
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.paukov.combinatorics.CombinatoricsFactory.createPermutationWithRepetitionGenerator
 import org.paukov.combinatorics.CombinatoricsFactory.createVector
 import org.paukov.combinatorics.Generator
 import org.paukov.combinatorics.ICombinatoricsVector
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.DigestUtils
+import org.springframework.web.client.RestTemplate
 import ru.nsu.isachenko.CrackHashManagerRequest
 import ru.nsu.isachenko.CrackHashWorkerResponse
 import java.io.StringReader
@@ -20,17 +24,33 @@ import javax.xml.bind.DatatypeConverter
 @Service
 class WorkerService {
 
-    fun compute(request: CrackHashManagerRequest): String {
-        val answers = findWord(request)
-        return CrackHashWorkerResponse().apply {
-            setAnswers(
-                CrackHashWorkerResponse.Answers().apply {
-                    words.addAll(answers)
-                }
-            )
-            partNumber = request.partNumber
-            requestId = request.requestId
-        }.convertToString()
+    fun compute(request: CrackHashManagerRequest) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val answers = findWord(request)
+            val response = CrackHashWorkerResponse().apply {
+                setAnswers(
+                    CrackHashWorkerResponse.Answers().apply {
+                        words.addAll(answers)
+                    }
+                )
+                partNumber = request.partNumber
+                requestId = request.requestId
+            }.convertToString()
+
+            sendAnswer(response)
+        }
+    }
+
+    private fun sendAnswer(response: String) {
+        val rest = HttpComponentsClientHttpRequestFactory().let {
+            RestTemplate(it)
+        }
+
+        rest.patchForObject(
+            "http://10.6.0.2:8080/internal/api/manager/hash/crack/request",
+            response,
+            Any::class.java
+        )
     }
 
     fun readXml(xml: String): CrackHashManagerRequest {

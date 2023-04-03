@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.googlecode.combinatoricslib:combinatoricslib:2.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.apache.httpcomponents.client5:httpclient5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

@@ -2,8 +2,6 @@ package ru.nsu.isachenko.manager.api.service
 
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.Marshaller
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -17,7 +15,7 @@ import java.io.StringWriter
 @Service
 class WorkerRestTemplateService {
 
-    suspend fun postTask(hash: String, maxLength: Int, requestId: String, taskId: Int) = withContext(Dispatchers.IO) {
+    fun postTask(hash: String, maxLength: Int, requestId: String, taskId: Int) {
         val restTemplate = RestTemplate()
         val request = CrackHashManagerRequest().apply {
             setRequestId(requestId)
