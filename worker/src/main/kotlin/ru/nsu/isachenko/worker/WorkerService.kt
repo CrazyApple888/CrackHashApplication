@@ -1,8 +1,5 @@
 package ru.nsu.isachenko.worker
 
-import jakarta.xml.bind.JAXBContext
-import jakarta.xml.bind.Marshaller
-import jakarta.xml.bind.Unmarshaller
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -10,20 +7,23 @@ import org.paukov.combinatorics.CombinatoricsFactory.createPermutationWithRepeti
 import org.paukov.combinatorics.CombinatoricsFactory.createVector
 import org.paukov.combinatorics.Generator
 import org.paukov.combinatorics.ICombinatoricsVector
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.DigestUtils
 import org.springframework.web.client.RestTemplate
 import ru.nsu.isachenko.CrackHashManagerRequest
 import ru.nsu.isachenko.CrackHashWorkerResponse
-import java.io.StringReader
-import java.io.StringWriter
+import ru.nsu.isachenko.worker.rabbitmq.WorkerResponsePublisher
 import javax.xml.bind.DatatypeConverter
 
 
 @Service
 class WorkerService(
+    @Autowired
     private val workerProperties: WorkerProperties,
+    @Autowired
+    private val workerResponsePublisher: WorkerResponsePublisher
 ) {
 
     fun compute(request: CrackHashManagerRequest) {
@@ -37,16 +37,15 @@ class WorkerService(
                 )
                 partNumber = request.partNumber
                 requestId = request.requestId
-            }.convertToString()
+            }//.convertToString()
 
-            sendAnswer(response)
+            workerResponsePublisher.publishResponse(response)
+            //sendAnswer(response)
         }
     }
 
     private fun sendAnswer(response: String) {
-        val rest = HttpComponentsClientHttpRequestFactory().let {
-            RestTemplate(it)
-        }
+        val rest = RestTemplate(HttpComponentsClientHttpRequestFactory())
 
         rest.patchForObject(
             workerProperties.managerEndpoint,
@@ -55,12 +54,12 @@ class WorkerService(
         )
     }
 
-    fun readXml(xml: String): CrackHashManagerRequest {
-        val context = JAXBContext.newInstance(CrackHashManagerRequest::class.java)
-        val unmarshaller: Unmarshaller = context.createUnmarshaller()
-        val reader = StringReader(xml)
-        return unmarshaller.unmarshal(reader) as CrackHashManagerRequest
-    }
+//    fun readXml(xml: String): CrackHashManagerRequest {
+//        val context = JAXBContext.newInstance(CrackHashManagerRequest::class.java)
+//        val unmarshaller: Unmarshaller = context.createUnmarshaller()
+//        val reader = StringReader(xml)
+//        return unmarshaller.unmarshal(reader) as CrackHashManagerRequest
+//    }
 
     private fun findWord(request: CrackHashManagerRequest): List<String> {
         val vector: ICombinatoricsVector<String> = createVector(request.alphabet.symbols)
@@ -82,12 +81,12 @@ class WorkerService(
         return DatatypeConverter.printHexBinary(DigestUtils.md5Digest(toByteArray()))
     }
 
-    private fun CrackHashWorkerResponse.convertToString(): String {
-        val jaxbContext: JAXBContext = JAXBContext.newInstance(CrackHashWorkerResponse::class.java)
-        val marshaller: Marshaller = jaxbContext.createMarshaller()
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-        val sw = StringWriter()
-        marshaller.marshal(this, sw)
-        return sw.toString()
-    }
+//    private fun CrackHashWorkerResponse.convertToString(): String {
+//        val jaxbContext: JAXBContext = JAXBContext.newInstance(CrackHashWorkerResponse::class.java)
+//        val marshaller: Marshaller = jaxbContext.createMarshaller()
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+//        val sw = StringWriter()
+//        marshaller.marshal(this, sw)
+//        return sw.toString()
+//    }
 }

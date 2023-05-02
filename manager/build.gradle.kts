@@ -27,7 +27,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.springframework:spring-oxm:3.0.0.RELEASE")
+	implementation("org.springframework:spring-oxm")
+
+	implementation("org.springframework.boot:spring-boot-starter-amqp")
 
 	implementation("javax.xml.bind:jaxb-api:2.3.1")
 	implementation("javax.activation:activation:1.1.1")

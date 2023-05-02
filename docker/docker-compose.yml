@@ -8,6 +8,8 @@ services:
       - "8080:8080"
     networks:
       - docker-inner-network
+    depends_on:
+      - rabbitmq
 
   worker:
     image: crackhash/worker:latest
@@ -76,6 +78,22 @@ services:
     networks:
       - docker-inner-network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    container_name: "rabbitmq"
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    networks:
+       - docker-inner-network
+
 networks:
   docker-inner-network:
     driver: bridge
@@ -85,3 +103,4 @@ volumes:
   mongodata2:
   mongodata3:
   mongostatus:
+  rabbitmq:

@@ -39,6 +39,9 @@ dependencies {
     implementation ("jakarta.xml.bind:jakarta.xml.bind-api:4.0.0")
     jaxb("org.glassfish.jaxb:jaxb-runtime:4.0.2")
     jaxb("org.glassfish.jaxb:jaxb-xjc:4.0.2")
+
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("org.springframework:spring-oxm")
 }
 
 val createXjcOutputDir by tasks.register("createXjcOutputDir") {
