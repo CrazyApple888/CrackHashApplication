@@ -22,7 +22,9 @@ import javax.xml.bind.DatatypeConverter
 
 
 @Service
-class WorkerService {
+class WorkerService(
+    private val workerProperties: WorkerProperties,
+) {
 
     fun compute(request: CrackHashManagerRequest) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -47,7 +49,7 @@ class WorkerService {
         }
 
         rest.patchForObject(
-            "http://10.6.0.2:8080/internal/api/manager/hash/crack/request",
+            workerProperties.managerEndpoint,
             response,
             Any::class.java
         )

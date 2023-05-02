@@ -12,6 +12,7 @@ val jaxb: Configuration by configurations.creating
 val jaxbVersion: String = "4.0.0"
 val schemaDir = "src/main/resources"
 val xjcOutputDir = "$buildDir/generated/source/xjc/main"
+
 group = "ru.nsu.isachenko"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -21,20 +22,19 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.security:spring-security-config")
-	implementation("org.springframework.security:spring-security-web")
-	implementation("org.springframework.security:spring-security-core")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("org.springframework:spring-oxm:3.0.0.RELEASE")
 
 	implementation("javax.xml.bind:jaxb-api:2.3.1")
 	implementation("javax.activation:activation:1.1.1")
 	implementation ("jakarta.xml.bind:jakarta.xml.bind-api:4.0.0")
 	jaxb("org.glassfish.jaxb:jaxb-runtime:4.0.2")
 	jaxb("org.glassfish.jaxb:jaxb-xjc:4.0.2")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 val createXjcOutputDir by tasks.register("createXjcOutputDir") {

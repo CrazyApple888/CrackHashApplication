@@ -1,15 +1,22 @@
 package ru.nsu.isachenko.manager.api.storage.model
 
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import ru.nsu.isachenko.manager.api.model.CrackRequest
 import ru.nsu.isachenko.manager.api.model.Status
 
-data class CrackHashJob(
-    val data: CrackRequest,
-    val tasks: MutableMap<Int, CrackHashTask>
-) {
+@Document("crackJob")
+class CrackHashJob {
 
-    class CrackHashTask(
-        val status: Status = Status.IN_PROGRESS,
-        val answers: List<String>? = null
-    )
+    @Id var id: String = ""
+    var data: CrackRequest = CrackRequest()
+    var tasks: MutableMap<Int, CrackHashTask> = mutableMapOf()
+
+
+    class CrackHashTask {
+        @Id
+        var id: String = ""
+        var status: Status = Status.IN_PROGRESS
+        var answers: List<String>? = null
+    }
 }

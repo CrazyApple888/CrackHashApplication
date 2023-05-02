@@ -1,13 +1,11 @@
 package ru.nsu.isachenko.manager.api.controller
 
-import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.util.DigestUtils
 import org.springframework.web.bind.annotation.*
 import ru.nsu.isachenko.manager.api.model.CrackRequest
 import ru.nsu.isachenko.manager.api.model.CrackResponse
 import ru.nsu.isachenko.manager.api.model.StatusResponse
 import ru.nsu.isachenko.manager.api.service.WorkerService
-import java.security.MessageDigest
 import javax.xml.bind.DatatypeConverter
 
 

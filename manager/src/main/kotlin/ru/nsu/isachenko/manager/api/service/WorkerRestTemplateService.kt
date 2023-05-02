@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import ru.nsu.isachenko.CrackHashManagerRequest
 import ru.nsu.isachenko.manager.config.CrackHashConfig
+import ru.nsu.isachenko.manager.config.ManagerProperties
 import java.io.StringWriter
 
 
 @Service
-class WorkerRestTemplateService {
+class WorkerRestTemplateService(
+    private val managerProperties: ManagerProperties,
+) {
 
     fun postTask(hash: String, maxLength: Int, requestId: String, taskId: Int) {
         val restTemplate = RestTemplate()
@@ -29,7 +32,7 @@ class WorkerRestTemplateService {
         }.convertToHttp()
 
         restTemplate.postForEntity(
-            "http://10.6.0.3:8081/internal/api/worker/hash/crack/task",
+            managerProperties.workerEndpoint,
             request,
             String::class.java
         )
