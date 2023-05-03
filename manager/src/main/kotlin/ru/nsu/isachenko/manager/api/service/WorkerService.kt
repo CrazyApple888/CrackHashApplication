@@ -13,6 +13,7 @@ import ru.nsu.isachenko.manager.api.storage.CrackHashRepository
 import ru.nsu.isachenko.manager.api.storage.TasksStorage
 import ru.nsu.isachenko.manager.config.CrackHashConfig
 import java.io.StringReader
+import java.util.concurrent.TimeUnit
 
 @Service
 class WorkerService(
@@ -54,6 +55,22 @@ class WorkerService(
                 if (it.value.status != Status.IN_PROGRESS) {
                     performTaskOnWorker(job.data, job.id, it.key)
                     it.value.status = Status.IN_PROGRESS
+                }
+            }
+            job.status = Status.IN_PROGRESS
+            jobRepository.save(job)
+        }
+    }
+
+    @Scheduled(fixedDelay = 15L, timeUnit = TimeUnit.MINUTES)
+    fun checkTasks() {
+        val jobs = jobRepository.findByStatus(Status.IN_PROGRESS)
+        println(jobs.joinToString())
+        jobs.forEach { job ->
+            job.tasks.forEach {
+                if (it.value.status == Status.IN_PROGRESS && it.value.lastUpdate - System.currentTimeMillis() > 900000) {
+                    performTaskOnWorker(job.data, job.id, it.key)
+                    it.value.lastUpdate = System.currentTimeMillis()
                 }
             }
             job.status = Status.IN_PROGRESS

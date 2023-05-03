@@ -18,5 +18,6 @@ class CrackHashJob {
         var id: String = ""
         var status: Status = Status.WAITING
         var answers: List<String>? = null
+        var lastUpdate: Long = System.currentTimeMillis()
     }
 }
