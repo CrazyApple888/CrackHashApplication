@@ -6,5 +6,5 @@ object CrackHashConfig {
             ('A'..'Z').map(Char::toString).toList()
 
     val workersCount: Int
-        get() = 1
+        get() = 2
 }

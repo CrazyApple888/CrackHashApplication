@@ -11,16 +11,27 @@ services:
     depends_on:
       - rabbitmq
 
-  worker:
+  worker1:
     image: crackhash/worker:latest
-    container_name: worker
-    hostname: worker
+    container_name: worker1
+    hostname: worker1
     expose:
       - "8081:8081"
     networks:
       - docker-inner-network
     depends_on:
       - manager
+
+  worker2:
+    image: crackhash/worker:latest
+    container_name: worker2
+    hostname: worker2
+    expose:
+      - "8082:8082"
+    networks:
+      - docker-inner-network
+    depends_on:
+      - manager    
     
   mongodb1:
     image: mongo:4
