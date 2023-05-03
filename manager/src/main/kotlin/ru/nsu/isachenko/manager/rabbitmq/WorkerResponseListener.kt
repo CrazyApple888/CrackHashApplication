@@ -12,7 +12,7 @@ class WorkerResponseListener(
     private val tasksStorage: TasksStorage
 ) {
 
-    @RabbitListener(queues = ["q.worker-response"], concurrency = "10")
+    @RabbitListener(queues = ["q.worker-responses"], concurrency = "10")
     fun onManagerRequest(workerResponse: CrackHashWorkerResponse) {
         tasksStorage.updateTask(workerResponse, workerResponse.partNumber)
     }

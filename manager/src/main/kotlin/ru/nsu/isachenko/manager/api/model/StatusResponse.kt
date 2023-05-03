@@ -6,6 +6,7 @@ class StatusResponse(
 )
 
 enum class Status{
+    WAITING,
     IN_PROGRESS,
     READY,
     ERROR;

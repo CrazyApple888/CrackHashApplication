@@ -11,12 +11,12 @@ class CrackHashJob {
     @Id var id: String = ""
     var data: CrackRequest = CrackRequest()
     var tasks: MutableMap<Int, CrackHashTask> = mutableMapOf()
-
+    var status: Status = Status.WAITING
 
     class CrackHashTask {
         @Id
         var id: String = ""
-        var status: Status = Status.IN_PROGRESS
+        var status: Status = Status.WAITING
         var answers: List<String>? = null
     }
 }

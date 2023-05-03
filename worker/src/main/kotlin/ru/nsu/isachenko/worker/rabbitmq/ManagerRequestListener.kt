@@ -12,7 +12,7 @@ class ManagerRequestListener(
     private val workerService: WorkerService
 ) {
 
-    @RabbitListener(queues = ["q.manager-request"])
+    @RabbitListener(queues = ["q.manager-requests"])
     fun onManagerRequest(managerRequest: CrackHashManagerRequest) {
         workerService.compute(managerRequest)
     }

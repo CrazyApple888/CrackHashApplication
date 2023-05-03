@@ -29,6 +29,7 @@ class WorkerService(
     fun compute(request: CrackHashManagerRequest) {
         CoroutineScope(Dispatchers.IO).launch {
             val answers = findWord(request)
+            println("found solution")
             val response = CrackHashWorkerResponse().apply {
                 setAnswers(
                     CrackHashWorkerResponse.Answers().apply {
@@ -39,6 +40,7 @@ class WorkerService(
                 requestId = request.requestId
             }//.convertToString()
 
+            println("send answer")
             workerResponsePublisher.publishResponse(response)
             //sendAnswer(response)
         }

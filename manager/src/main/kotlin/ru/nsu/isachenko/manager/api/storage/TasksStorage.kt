@@ -1,6 +1,8 @@
 package ru.nsu.isachenko.manager.api.storage
 
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import ru.nsu.isachenko.CrackHashWorkerResponse
 import ru.nsu.isachenko.manager.api.model.CrackRequest
 import ru.nsu.isachenko.manager.api.model.Status
@@ -24,13 +26,18 @@ class TasksStorage(
         return database.save(job).id
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     fun updateTask(response: CrackHashWorkerResponse?, taskId: Int) {
+        println(response?.requestId)
         val job = response?.requestId?.let { database.findById(it) }?.get() ?: return
         job.tasks.computeIfPresent(taskId) { _, _ ->
             CrackHashJob.CrackHashTask().apply {
                 status = Status.READY
                 answers = response.answers?.words
             }
+        }
+        if (job.tasks.all { it.value.status == Status.READY }) {
+            job.status = Status.READY
         }
         database.save(job)
     }
@@ -43,7 +50,7 @@ class TasksStorage(
 
         return when {
             hasErrors -> StatusResponse(status = Status.ERROR)
-            hasProgress -> StatusResponse(status = Status.IN_PROGRESS)
+            hasProgress -> StatusResponse(data = job.tasks.values.flatMap { it.answers ?: emptyList() }.distinct(), status = Status.IN_PROGRESS)
             else -> StatusResponse(
                 status = Status.READY,
                 data = job.tasks.values.flatMap { it.answers ?: emptyList() }.distinct()

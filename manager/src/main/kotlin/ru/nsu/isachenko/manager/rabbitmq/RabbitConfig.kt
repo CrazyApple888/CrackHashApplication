@@ -68,10 +68,10 @@ class RabbitConfig {
 
     companion object {
 
-        const val EXCHANGE_NAME = "e.crack-hash"
-        const val MANAGER_REQUEST_ROUTING_KEY = "manager-request"
+        const val EXCHANGE_NAME = "e.crackhash"
+        const val MANAGER_REQUEST_ROUTING_KEY = "manager-requests"
         private const val MANAGER_REQUEST_QUEUE_NAME = "q.$MANAGER_REQUEST_ROUTING_KEY"
-        const val WORKER_RESPONSE_ROUTING_KEY = "worker-response"
+        const val WORKER_RESPONSE_ROUTING_KEY = "worker-responses"
         private const val WORKER_RESPONSE_QUEUE_NAME = "q.$WORKER_RESPONSE_ROUTING_KEY"
     }
 }
