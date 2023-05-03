@@ -47,14 +47,17 @@ class TasksStorage(
         val job = database.findById(id).getOrNull() ?: return StatusResponse(status = Status.ERROR)
         val hasErrors = job.tasks.values.find { it.status == Status.ERROR } != null
         val hasProgress = job.tasks.values.find { it.status == Status.IN_PROGRESS } != null
-
-        return when {
-            hasErrors -> StatusResponse(status = Status.ERROR)
-            hasProgress -> StatusResponse(data = job.tasks.values.flatMap { it.answers ?: emptyList() }.distinct(), status = Status.IN_PROGRESS)
-            else -> StatusResponse(
-                status = Status.READY,
-                data = job.tasks.values.flatMap { it.answers ?: emptyList() }.distinct()
-            )
+        val hasWaiting = job.tasks.values.find { it.status == Status.WAITING } != null
+        val status = when {
+            hasErrors -> Status.ERROR
+            hasProgress -> Status.IN_PROGRESS
+            hasWaiting -> Status.WAITING
+            else -> Status.READY
         }
+
+        return StatusResponse(
+            data = job.tasks.values.flatMap { it.answers ?: emptyList() }.distinct(),
+            status = status
+        )
     }
 }

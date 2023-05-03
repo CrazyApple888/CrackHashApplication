@@ -20,29 +20,24 @@ import kotlin.math.pow
 @Service
 class WorkerService(
     @Autowired
-    private val workerProperties: WorkerProperties,
-    @Autowired
     private val workerResponsePublisher: WorkerResponsePublisher
 ) {
 
     fun compute(request: CrackHashManagerRequest) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val answers = findWord(request)
-            println("found solution")
-            val response = CrackHashWorkerResponse().apply {
-                setAnswers(
-                    CrackHashWorkerResponse.Answers().apply {
-                        words.addAll(answers)
-                    }
-                )
-                partNumber = request.partNumber
-                requestId = request.requestId
-            }//.convertToString()
-
-            println("send answer")
-            workerResponsePublisher.publishResponse(response)
-            //sendAnswer(response)
+        val answers = findWord(request)
+        println("found solution")
+        val response = CrackHashWorkerResponse().apply {
+            setAnswers(
+                CrackHashWorkerResponse.Answers().apply {
+                    words.addAll(answers)
+                }
+            )
+            partNumber = request.partNumber
+            requestId = request.requestId
         }
+
+        println("send answer")
+        workerResponsePublisher.publishResponse(response)
     }
 
     fun findWord(request: CrackHashManagerRequest): List<String> {
@@ -50,7 +45,8 @@ class WorkerService(
         for (length in 1..request.maxLength) {
             val allWordCount = request.alphabet.symbols.size.toDouble().pow(length.toDouble()).toInt()
             val start = start(request.partNumber.toLong(), request.partCount.toLong(), allWordCount.toLong())
-            val partWordCount = currPartCount(request.partNumber.toLong(), request.partCount.toLong(), allWordCount.toLong())
+            val partWordCount =
+                currPartCount(request.partNumber.toLong(), request.partCount.toLong(), allWordCount.toLong())
             words.addAll(
                 Generator.permutation(request.alphabet.symbols)
                     .withRepetitions(length)

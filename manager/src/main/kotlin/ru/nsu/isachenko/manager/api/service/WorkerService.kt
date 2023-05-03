@@ -62,7 +62,7 @@ class WorkerService(
         }
     }
 
-    @Scheduled(fixedDelay = 15L, timeUnit = TimeUnit.MINUTES)
+    /*@Scheduled(fixedDelay = 15L, timeUnit = TimeUnit.MINUTES)
     fun checkTasks() {
         val jobs = jobRepository.findByStatus(Status.IN_PROGRESS)
         println(jobs.joinToString())
@@ -76,7 +76,7 @@ class WorkerService(
             job.status = Status.IN_PROGRESS
             jobRepository.save(job)
         }
-    }
+    }*/
 
     fun updateTask(response: String) {
         val responseXml = runCatching {
